@@ -9,6 +9,10 @@ from sklearn.decomposition import PCA
 from contingency.models.network import Network
 from contingency.controllers.screener import ExhaustiveScreener
 
+
+g = nx.path_graph(7)
+nx.current_flow_betweenness_centrality(g)
+
 # Lê os grafos do arquivo .g6
 Gs = nx.read_graph6("data/itaipu11_random.g6")
 print(f"Lidos {len(Gs)} grafos")
@@ -20,18 +24,63 @@ k = 1
 TRAIN_SPLIT = 0.7
 NUM_EPOCHS_TRAIN = 50
 
+Gs = nx.read_edgelist("./data/ieee39.txt")
+
+
+def compara_delta_cfb_ciclos(ni: int, nf: int, arestas: list):
+    max_deltas = []
+    nos = list(range(ni, nf + 1))
+    for i in nos:
+        G = nx.cycle_graph(i)
+        for a in arestas:
+            G.add_edge(a)
+        G = nx.relabel_nodes(G, {n: str(n) for n in G.nodes()})
+        net = Network("Cycle", G)
+        k = 1
+        screener = ExhaustiveScreener(net)
+        deltas = screener.global_deltas(k)
+        max_deltas.append(max(list(deltas.values())))
+    return nos, max_deltas
+
+    plt.scatter(nos, max_deltas)
+    plt.show()
+
+
 print("Gerando labels das arestas")
+k = 1
 for G in Gs:
-    net = Network("IEEE", G)
+    net = Network("IEEE", Gs)
     screener = ExhaustiveScreener(net)
-    deltas = screener.normalized_global_deltas(k)
+    deltas = screener.global_deltas(k)
+    print(deltas)
     max_delta = max(list(deltas.values()))
+    print(max_delta)
     for d in deltas.keys():
         if deltas[d] / max_delta >= 0.7:
             deltas[d] = 1
         else:
             deltas[d] = 0
-    nx.set_edge_attributes(G, deltas, "label")
+    nx.set_edge_attributes(Gs, deltas, "label")
+
+Gl = nx.line_graph(Gs)
+nx.set_node_attributes(Gl, deltas, "label")
+
+x = np.arange(3.0, 100.0, 1.0)
+y_cycle = np.zeros_like(x)
+y_path = np.zeros_like(x)
+for i, xi in enumerate(x):
+    if xi % 2 == 0:
+        y_path[i] = xi * (xi - 2) / (2 * xi * (xi - 1))
+        y_cycle[i] = (xi - 2) ** 2 / (4 * xi * (xi - 1))
+    else:
+        y_path[i] = (xi - 1) ** 2 / (2 * xi * (xi - 1))
+        y_cycle[i] = (xi - 1) * (xi - 3) / (4 * xi * (xi - 1))
+
+fig, ax = plt.subplots(figsize=(8, 8))
+ax.plot(x, y_cycle, label="cycle")
+ax.plot(x, y_path, label="path")
+
+plt.show()
 
 
 # pos = nx.spring_layout(Gs[0])

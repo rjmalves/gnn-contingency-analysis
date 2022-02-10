@@ -35,6 +35,11 @@ dataset = Planetoid(
     root="./data/Planetoid", name="Cora", transform=NormalizeFeatures()
 )
 data = dataset[0]  # Get the first graph object.
+data
+dataset.num_classes
+
+x: torch.Tensor = data.x
+x.dtype
 
 
 class GCN(torch.nn.Module):
