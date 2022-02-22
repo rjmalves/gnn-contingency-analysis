@@ -241,9 +241,7 @@ for c in combinations:
         classes_relabel, nodes = canonical_relabeling(Gl, classes)
 
         train_nodes, test_nodes = split_nodes(train_split, nodes)
-        data = create_torch_data(
-            Gl, train_nodes, test_nodes, classes_relabel, embedding_d
-        )
+        data = create_torch_data(Gl, train_nodes, test_nodes, embedding_d)
 
         model = GCN(
             num_inputs=data.num_features,
