@@ -14,9 +14,9 @@ from torch_geometric.data import Data
 import matplotlib.pyplot as plt
 
 
-GRAPH = "itaipu11"
+GRAPH = "ieee300"
 EDGELIST = f"data/{GRAPH}.txt"
-K = [1, 2, 3, 4]
+K = [1, 2]
 N_EVALS = 50
 TOL = 0.7
 EMBEDDING_D = 128
