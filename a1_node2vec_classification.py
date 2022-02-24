@@ -50,27 +50,16 @@ def visualize(h, color, name: str):
     plt.close(fig)
 
 
-def read_edgelist_deltas(
-    arq_edgelist: str, arq_deltas: str
-) -> Dict[tuple, float]:
-    edgelist = open(arq_edgelist, "r")
+def read_edgelist_deltas(arq_deltas: str) -> Dict[tuple, float]:
     deltas = open(arq_deltas, "r")
-    lin_edges = ""
     lin_deltas = ""
     delta_dict: Dict[tuple, float] = {}
     while True:
-        lin_edges = edgelist.readline()
         lin_deltas = deltas.readline()
-        if len(lin_edges) == 0:
+        if len(lin_deltas) == 0:
             break
-        elif " " in lin_edges:
-            vertices = lin_edges.split(" ")
-        elif "\t" in lin_edges:
-            vertices = lin_edges.split("\t")
-        else:
-            raise RuntimeError("Erro na leitura da lista de arestas")
-        v = [v.strip() for v in vertices if len(v) > 0]
-        delta_dict[(v[0], v[1])] = float(lin_deltas)
+        src, dst, delta = lin_deltas.split(",")
+        delta_dict[(src, dst)] = float(delta)
     return delta_dict
 
 
@@ -122,7 +111,7 @@ def split_edges(train_split: float, edges_classes: Dict[int, np.ndarray]):
     train_edges_by_classes = {v: [] for v in class_set}
     test_edges_by_classes = {v: [] for v in class_set}
     less_elements = min([len(c) for c in edges_classes.values()])
-    num_train_elements_by_class = round(train_split * less_elements)
+    num_train_elements_by_class = max([1, round(train_split * less_elements)])
     for c in class_set:
         edges = edges_classes[c]
         train_edges_by_classes[c] = edges[:num_train_elements_by_class]
@@ -245,7 +234,7 @@ c = combinations[0]
 for c in combinations:
     k, train_split, embedding_d = c
     DELTAS = f"data/exaustivo/exaustivo_{GRAPH}_{k}/edge_global_deltas.csv"
-    deltas = read_edgelist_deltas(EDGELIST, DELTAS)
+    deltas = read_edgelist_deltas(DELTAS)
     print(f"Params = {c}")
     for i in range(1, N_EVALS + 1):
         print(f"Eval {i}")

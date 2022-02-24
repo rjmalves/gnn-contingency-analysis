@@ -17,7 +17,7 @@ from torch_geometric.data import Data
 import matplotlib.pyplot as plt
 
 
-GRAPH = "ieee57"
+GRAPH = "itaipu11"
 EDGELIST = f"data/{GRAPH}.txt"
 K = [1, 2, 3, 4]
 N_EVALS = 50
@@ -53,27 +53,16 @@ def visualize(h, color, name: str):
     plt.close(fig)
 
 
-def read_edgelist_deltas(
-    arq_edgelist: str, arq_deltas: str
-) -> Dict[tuple, float]:
-    edgelist = open(arq_edgelist, "r")
+def read_edgelist_deltas(arq_deltas: str) -> Dict[tuple, float]:
     deltas = open(arq_deltas, "r")
-    lin_edges = ""
     lin_deltas = ""
     delta_dict: Dict[tuple, float] = {}
     while True:
-        lin_edges = edgelist.readline()
         lin_deltas = deltas.readline()
-        if len(lin_edges) == 0:
+        if len(lin_deltas) == 0:
             break
-        elif " " in lin_edges:
-            vertices = lin_edges.split(" ")
-        elif "\t" in lin_edges:
-            vertices = lin_edges.split("\t")
-        else:
-            raise RuntimeError("Erro na leitura da lista de arestas")
-        v = [v.strip() for v in vertices if len(v) > 0]
-        delta_dict[(v[0], v[1])] = float(lin_deltas)
+        src, dst, delta = lin_deltas.split(",")
+        delta_dict[(src, dst)] = float(delta)
     return delta_dict
 
 
@@ -228,7 +217,7 @@ result = pd.DataFrame()
 for c in combinations:
     k, embedding_d, train_split, channels = c
     DELTAS = f"data/exaustivo/exaustivo_{GRAPH}_{k}/edge_global_deltas.csv"
-    deltas = read_edgelist_deltas(EDGELIST, DELTAS)
+    deltas = read_edgelist_deltas(DELTAS)
     print(f"Params = {c}")
     for i in range(1, N_EVALS + 1):
         print(f"Eval {i}")
