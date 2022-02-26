@@ -17,16 +17,16 @@ from torch_geometric.data import Data
 import matplotlib.pyplot as plt
 
 
-GRAPH = "ieee57"
-EDGELIST = f"data/{GRAPH}.txt"
+GRAPH = "itaipu11"
+EDGELIST = f"/home/rogerio/git/k-contingency-screening/{GRAPH}.txt"
 K = [1, 2, 3, 4]
 N_EVALS = 50
-EMBEDDING_D = [2, 4, 8, 16, 32, 64, 128]
+EMBEDDING_D = [32]
 TRAIN_SPLIT = [0.1, 0.2, 0.3, 0.4, 0.5]
 DROPOUT = 0.5
-CHANNELS = [4, 8, 16, 32, 64, 128]
-NUM_EPOCHS = 200
-LEARNING_RATE = 1e-2
+CHANNELS = [32]
+NUM_EPOCHS = 100
+LEARNING_RATE = 1e-3
 
 
 def visualize(h, color, name: str):
@@ -66,7 +66,15 @@ def read_edgelist_deltas(arq_deltas: str) -> Dict[tuple, float]:
     return delta_dict
 
 
-def generate_labels(deltas: Dict[tuple, float]) -> Dict[tuple, int]:
+def generate_labels(deltas: Dict[tuple, float]) -> Dict[tuple, float]:
+    nonzeros = [d for d in list(deltas.values()) if d > 0]
+    max_delta = max(nonzeros)
+    min_delta = min(nonzeros)
+    for k, v in deltas.items():
+        if v == 0:
+            deltas[k] = -1
+        else:
+            deltas[k] = (deltas[k] - min_delta) / (max_delta - min_delta)
     return deltas
 
 
@@ -102,9 +110,10 @@ def divide_nodes_in_classes(
 
 
 # Divides train-val-test splits balancing by class labels
-def split_nodes(train_split: float, nodes: List[int]):
-    num_train_elements = round(train_split * len(nodes))
-    nodes_for_split = np.array(nodes)
+def split_nodes(train_split: float, deltas: Dict[int, float]):
+    valid_nodes = [k for k, v in deltas.items() if v >= 0]
+    num_train_elements = round(train_split * len(valid_nodes))
+    nodes_for_split = np.array(valid_nodes)
     np.random.shuffle(nodes_for_split)
     train_nodes = nodes_for_split[:num_train_elements]
     test_nodes = nodes_for_split[num_train_elements:]
@@ -216,7 +225,7 @@ G = nx.read_edgelist(EDGELIST)
 result = pd.DataFrame()
 for c in combinations:
     k, embedding_d, train_split, channels = c
-    DELTAS = f"data/exaustivo/exaustivo_{GRAPH}_{k}/edge_global_deltas.csv"
+    DELTAS = f"/home/rogerio/git/k-contingency-screening/exaustivo_{GRAPH}_{k}/edge_global_deltas.csv"
     deltas = read_edgelist_deltas(DELTAS)
     print(f"Params = {c}")
     for i in range(1, N_EVALS + 1):
@@ -229,7 +238,7 @@ for c in combinations:
         Gl = nx.line_graph(G)
         classes_relabel, nodes = canonical_relabeling(Gl, classes)
 
-        train_nodes, test_nodes = split_nodes(train_split, nodes)
+        train_nodes, test_nodes = split_nodes(train_split, classes_relabel)
         data = create_torch_data(Gl, train_nodes, test_nodes, embedding_d)
 
         model = GCN(

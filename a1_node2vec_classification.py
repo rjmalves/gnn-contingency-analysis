@@ -15,12 +15,12 @@ from torch_geometric.data import DataLoader, Data
 import matplotlib.pyplot as plt
 
 
-GRAPH = "ieee57"
-EDGELIST = f"data/{GRAPH}.txt"
+GRAPH = "itaipu11"
+EDGELIST = f"/home/rogerio/git/k-contingency-screening/{GRAPH}.txt"
 K = [1, 2, 3, 4]
-N_EVALS = 50
+N_EVALS = 1
 TOL = 0.7
-EMBEDDING_D = [8, 16, 32, 64, 128]
+EMBEDDING_D = [128]
 TRAIN_SPLIT = [0.1, 0.2, 0.3, 0.4, 0.5]
 NUM_EPOCHS = 200
 LEARNING_RATE = 1e-2
@@ -67,12 +67,16 @@ def generate_labels(
     deltas: Dict[tuple, float], tol_sup: float
 ) -> Dict[tuple, int]:
     classes = {k: 0 for k in deltas.keys()}
-    max_delta = max(list(deltas.values()))
+    nonzeros = [d for d in list(deltas.values()) if d > 0]
+    max_delta = max(nonzeros)
+    min_delta = min(nonzeros)
     for d in deltas.keys():
-        if deltas[d] / max_delta >= tol_sup:
+        if (deltas[d] - min_delta) / (max_delta - min_delta) >= tol_sup:
             classes[d] = 1
-        else:
+        elif deltas[d] > 0:
             classes[d] = 0
+        else:
+            classes[d] = -1
     return classes
 
 
@@ -107,10 +111,10 @@ def divide_edges_in_classes(
 
 # Divides train-val-test splits balancing by class labels
 def split_edges(train_split: float, edges_classes: Dict[int, np.ndarray]):
-    class_set = list(edges_classes.keys())
+    class_set = [c for c in list(edges_classes.keys()) if c != -1]
     train_edges_by_classes = {v: [] for v in class_set}
     test_edges_by_classes = {v: [] for v in class_set}
-    less_elements = min([len(c) for c in edges_classes.values()])
+    less_elements = min([len(edges_classes[v]) for v in class_set])
     num_train_elements_by_class = max([1, round(train_split * less_elements)])
     for c in class_set:
         edges = edges_classes[c]
@@ -121,6 +125,8 @@ def split_edges(train_split: float, edges_classes: Dict[int, np.ndarray]):
     for c in class_set:
         train_edges += list(train_edges_by_classes[c])
         test_edges += list(test_edges_by_classes[c])
+    print(f"Train: {train_edges}")
+    print(f"Test: {test_edges}")
     return train_edges, test_edges
 
 
@@ -191,6 +197,8 @@ def test(
         edge = (test_edges[i][0], test_edges[i][1])
         X_test[i, :] = edge_embeddings[edge]
         y_test[i] = classes[edge]
+    print(f"Y train: {y_train}")
+    print(f"Y test: {y_test}")
     # Trains the classifier
     clf = RandomForestClassifier(random_state=0)
     clf.fit(X_train, y_train)
@@ -233,7 +241,7 @@ result = pd.DataFrame()
 c = combinations[0]
 for c in combinations:
     k, train_split, embedding_d = c
-    DELTAS = f"data/exaustivo/exaustivo_{GRAPH}_{k}/edge_global_deltas.csv"
+    DELTAS = f"/home/rogerio/git/k-contingency-screening/exaustivo_{GRAPH}_{k}/edge_global_deltas.csv"
     deltas = read_edgelist_deltas(DELTAS)
     print(f"Params = {c}")
     for i in range(1, N_EVALS + 1):

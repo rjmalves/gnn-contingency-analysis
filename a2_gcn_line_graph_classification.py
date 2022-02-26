@@ -14,17 +14,17 @@ from torch_geometric.data import Data
 import matplotlib.pyplot as plt
 
 
-GRAPH = "ieee57"
-EDGELIST = f"data/{GRAPH}.txt"
+GRAPH = "ieee118"
+EDGELIST = f"/home/rogerio/git/k-contingency-screening/{GRAPH}.txt"
 K = [1, 2, 3, 4]
-N_EVALS = 50
+N_EVALS = 1
 TOL = 0.7
 EMBEDDING_D = 128
 TRAIN_SPLIT = [0.1, 0.2, 0.3, 0.4, 0.5]
 DROPOUT = 0.5
-HIDDEN_CHANNELS = [16, 32, 64]
-NUM_EPOCHS = 500
-LEARNING_RATE = 1e-2
+HIDDEN_CHANNELS = [64]
+NUM_EPOCHS = 200
+LEARNING_RATE = 1e-3
 
 
 def visualize(h, color, name: str):
@@ -68,12 +68,16 @@ def generate_labels(
     deltas: Dict[tuple, float], tol_sup: float
 ) -> Dict[tuple, int]:
     classes = {k: 0 for k in deltas.keys()}
-    max_delta = max(list(deltas.values()))
+    nonzeros = [d for d in list(deltas.values()) if d > 0]
+    max_delta = max(nonzeros)
+    min_delta = min(nonzeros)
     for d in deltas.keys():
-        if deltas[d] / max_delta >= tol_sup:
+        if (deltas[d] - min_delta) / (max_delta - min_delta) >= tol_sup:
             classes[d] = 1
-        else:
+        elif deltas[d] > 0:
             classes[d] = 0
+        else:
+            classes[d] = -1
     return classes
 
 
@@ -110,7 +114,7 @@ def divide_nodes_in_classes(
 
 # Divides train-val-test splits balancing by class labels
 def split_nodes(train_split: float, nodes_classes: Dict[int, np.ndarray]):
-    class_set = list(nodes_classes.keys())
+    class_set = [c for c in list(nodes_classes.keys()) if c != -1]
     train_nodes_by_classes = {v: [] for v in class_set}
     test_nodes_by_classes = {v: [] for v in class_set}
     less_elements = min([len(c) for c in nodes_classes.values()])
@@ -148,7 +152,6 @@ def create_torch_data(
 
     # Add labels and masks to data object
     train_mask = np.zeros((n,), dtype=np.bool8)
-    val_mask = np.zeros((n,), dtype=np.bool8)
     test_mask = np.zeros((n,), dtype=np.bool8)
     for k in train_nodes:
         train_mask[k] = True
@@ -255,7 +258,7 @@ G = nx.read_edgelist(EDGELIST)
 result = pd.DataFrame()
 for c in combinations:
     k, train_split, channels = c
-    DELTAS = f"data/exaustivo/exaustivo_{GRAPH}_{k}/edge_global_deltas.csv"
+    DELTAS = f"/home/rogerio/git/k-contingency-screening/exaustivo_{GRAPH}_{k}/edge_global_deltas.csv"
     deltas = read_edgelist_deltas(DELTAS)
     print(f"Params = {c}")
     for i in range(1, N_EVALS + 1):
@@ -267,6 +270,8 @@ for c in combinations:
 
         nodes_classes = divide_nodes_in_classes(classes_relabel)
         train_nodes, test_nodes = split_nodes(train_split, nodes_classes)
+        print(f"Train: {train_nodes}")
+        print(f"Test: {test_nodes}")
         data = create_torch_data(
             Gl, train_nodes, test_nodes, nodes_classes, EMBEDDING_D
         )
