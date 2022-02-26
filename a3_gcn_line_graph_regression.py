@@ -227,6 +227,7 @@ for c in combinations:
     k, embedding_d, train_split, channels = c
     DELTAS = f"/home/rogerio/git/k-contingency-screening/exaustivo_{GRAPH}_{k}/edge_global_deltas.csv"
     deltas = read_edgelist_deltas(DELTAS)
+    classes = generate_labels(deltas)
     print(f"Params = {c}")
     for i in range(1, N_EVALS + 1):
         print(f"Eval {i}")
@@ -234,7 +235,6 @@ for c in combinations:
             f"k{k}_emb{embedding_d}_"
             + f"split{train_split}_channels{channels}_it{i}"
         )
-        classes = generate_labels(deltas)
         Gl = nx.line_graph(G)
         classes_relabel, nodes = canonical_relabeling(Gl, classes)
 
