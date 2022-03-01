@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-arq = "a2_ieee57"
+arq = "a2_itaipu11"
 df = pd.read_csv(f"./result_{arq}.csv", index_col=0)
 fig, axs = plt.subplots(5, 1, figsize=(16, 20), sharex=True)
 col_group = ["k", "train_split", "channels"]
