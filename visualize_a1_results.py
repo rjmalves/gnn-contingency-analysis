@@ -1,10 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-arq = "k1_ieee57_le01_2class_arch3"
+arq = "a1_itaipu11"
 df = pd.read_csv(f"./result_{arq}.csv", index_col=0)
 fig, axs = plt.subplots(5, 1, figsize=(16, 20), sharex=True)
-col_group = ["tol_inf", "tol_sup", "train_split", "channels"]
+col_group = ["k", "train_split", "embedding_d"]
 df.boxplot(
     column=["accuracy"],
     by=col_group,
