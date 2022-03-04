@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
-arq = "a2_itaipu11"
+arq = "a1_itaipu11"
 metric_cols = ["accuracy", "macro avg_f1-score", "critical_f1-score"]
 legends = ["Accuracy", "Avg. F1-Score", "Critical F1-Score"]
 colors = [
@@ -27,22 +27,22 @@ fig, axs = plt.subplots(2, 2, figsize=(8, 6), sharex=True, sharey=True)
 # 0.5: [2, 2, 3, 2]
 
 # Used for A1 Approach
-# splits_by_k = {1: [0.3, 0.5], 2: [0.2, 0.5], 3: [0.1, 0.4, 0.5], 4: [0.1, 0.5]}
-# labels_by_k = {
-#     1: [1, 2],
-#     2: [1, 2],
-#     3: [1, 2, 3],
-#     4: [1, 2],
-# }
-
-# Used for A2 approach
-splits_by_k = {1: [0.1, 0.5], 2: [0.4, 0.5], 3: [0.2, 0.4, 0.5], 4: [0.2, 0.5]}
+splits_by_k = {1: [0.3, 0.5], 2: [0.2, 0.5], 3: [0.1, 0.4, 0.5], 4: [0.1, 0.5]}
 labels_by_k = {
     1: [1, 2],
     2: [1, 2],
     3: [1, 2, 3],
     4: [1, 2],
 }
+
+# Used for A2 approach
+# splits_by_k = {1: [0.1, 0.5], 2: [0.4, 0.5], 3: [0.2, 0.4, 0.5], 4: [0.2, 0.5]}
+# labels_by_k = {
+#     1: [1, 2],
+#     2: [1, 2],
+#     3: [1, 2, 3],
+#     4: [1, 2],
+# }
 
 
 xticks = [1, 2, 3]
@@ -98,3 +98,21 @@ fig.legend(
 )
 plt.subplots_adjust(bottom=0.140)
 plt.savefig(f"visual_{arq}_metrics.png")
+
+for i, k in enumerate([1, 2, 3, 4]):
+    labels = labels_by_k[k]
+    lines = [[str(lab)] for lab in labels]
+    for j, col in enumerate(metric_cols):
+        values = [
+            df.loc[(df[k_col] == k) & (df[split_col] == s), col]
+            for s in splits_by_k[k]
+        ]
+        means = [v.mean() for v in values]
+        errors = [v.std() for v in values]
+        for m in range(len(lines)):
+            lines[m].append(
+                f" ${100 * means[m]:.1f} \\pm {100 * errors[m]:.1f}$ "
+            )
+    print(f"k = {k}")
+    for line in lines:
+        print("&".join(line) + " \\\\")
