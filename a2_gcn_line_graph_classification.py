@@ -17,13 +17,13 @@ import matplotlib.pyplot as plt
 GRAPH = "itaipu11"
 EDGELIST = f"/home/rogerio/git/k-contingency-screening/{GRAPH}.txt"
 K = [1, 2, 3, 4]
-N_EVALS = 50
-TOL = 0.7
+N_EVALS = 10
+TOL = 0.25
 EMBEDDING_D = 128
 TRAIN_SPLIT = [0.1, 0.2, 0.3, 0.4, 0.5]
-DROPOUT = 0.5
+DROPOUT = 0.1
 HIDDEN_CHANNELS = [64]
-NUM_EPOCHS = 200
+NUM_EPOCHS = 500
 LEARNING_RATE = 1e-3
 
 
@@ -64,15 +64,37 @@ def read_edgelist_deltas(arq_deltas: str) -> Dict[tuple, float]:
     return delta_dict
 
 
+# def generate_labels(
+#     deltas: Dict[tuple, float], tol_sup: float
+# ) -> Dict[tuple, int]:
+#     classes = {k: 0 for k in deltas.keys()}
+#     nonzeros = [d for d in list(deltas.values()) if d > 0]
+#     max_delta = max(nonzeros)
+#     min_delta = min(nonzeros)
+#     for d in deltas.keys():
+#         if (deltas[d] - min_delta) / (max_delta - min_delta) >= tol_sup:
+#             classes[d] = 1
+#         elif deltas[d] > 0:
+#             classes[d] = 0
+#         else:
+#             classes[d] = -1
+#     return classes
+
+
 def generate_labels(
-    deltas: Dict[tuple, float], tol_sup: float
+    deltas: Dict[tuple, float], quantile: float
 ) -> Dict[tuple, int]:
     classes = {k: 0 for k in deltas.keys()}
-    nonzeros = [d for d in list(deltas.values()) if d > 0]
-    max_delta = max(nonzeros)
-    min_delta = min(nonzeros)
+    nonzeros = np.array([d for d in list(deltas.values()) if d > 0])
+    threshold = np.quantile(nonzeros, 1 - quantile)
+    print(
+        "Number of nonzero deltas: ",
+        nonzeros.shape[0],
+        "Threshold: ",
+        threshold,
+    )
     for d in deltas.keys():
-        if (deltas[d] - min_delta) / (max_delta - min_delta) >= tol_sup:
+        if deltas[d] >= threshold:
             classes[d] = 1
         elif deltas[d] > 0:
             classes[d] = 0
@@ -117,7 +139,7 @@ def split_nodes(train_split: float, nodes_classes: Dict[int, np.ndarray]):
     class_set = [c for c in list(nodes_classes.keys()) if c != -1]
     train_nodes_by_classes = {v: [] for v in class_set}
     test_nodes_by_classes = {v: [] for v in class_set}
-    less_elements = min([len(c) for c in nodes_classes.values()])
+    less_elements = min([len(nodes_classes[v]) for v in class_set])
     num_train_elements_by_class = max([1, round(train_split * less_elements)])
     for c in class_set:
         nodes = nodes_classes[c]
@@ -180,17 +202,13 @@ class GCN(torch.nn.Module):
         super().__init__()
         self._dropout = dropout
         self.conv1 = GCNConv(num_inputs, hidden_channels)
-        self.conv2 = GCNConv(hidden_channels, hidden_channels)
-        self.conv3 = GCNConv(hidden_channels, num_outputs)
+        self.conv2 = GCNConv(hidden_channels, num_outputs)
 
     def forward(self, x, edge_index):
         x = self.conv1(x, edge_index)
         x = x.relu()
         x = F.dropout(x, p=self._dropout, training=self.training)
         x = self.conv2(x, edge_index)
-        x = x.relu()
-        x = F.dropout(x, p=self._dropout, training=self.training)
-        x = self.conv3(x, edge_index)
         return x
 
 
@@ -270,8 +288,8 @@ for c in combinations:
 
         nodes_classes = divide_nodes_in_classes(classes_relabel)
         train_nodes, test_nodes = split_nodes(train_split, nodes_classes)
-        print(f"Train: {train_nodes}")
-        print(f"Test: {test_nodes}")
+        print(f"Train: {len(train_nodes)}")
+        print(f"Test: {len(test_nodes)}")
         data = create_torch_data(
             Gl, train_nodes, test_nodes, nodes_classes, EMBEDDING_D
         )

@@ -3,9 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+plt.rcParams["font.size"] = "14"
+
 arq = "a2_ieee118"
-metric_cols = ["accuracy", "macro avg_f1-score", "critical_f1-score"]
-legends = ["Accuracy", "Avg. F1-Score", "Critical F1-Score"]
+metric_cols = ["macro avg_f1-score", "critical_f1-score"]
+legends = ["Avg. F1-Score", "Critical F1-Score"]
 colors = [
     "#f76469",
     "#828583",
@@ -14,47 +16,26 @@ colors = [
 split_col = "train_split"
 splits = [0.1, 0.2, 0.3, 0.4, 0.5]
 k_col = "k"
-width = 0.6
+width = 0.08
 df = pd.read_csv(f"./result_{arq}.csv", index_col=0)
 fig, axs = plt.subplots(2, 2, figsize=(8, 6), sharex=True, sharey=True)
 
-# Edges by split table
-# 0.1: [1]
-# 0.2: [1]
-# 0.3: [1]
-# 0.4: [1]
-# 0.5: [1]
-
-# Used for A1 approach
-# splits_by_k = {
-#     1: [0.1, 0.2, 0.3, 0.4, 0.5],
-#     2: [0.1, 0.2, 0.3, 0.4, 0.5],
-#     3: [0.1, 0.2, 0.5],
-#     4: [0.1, 0.2, 0.5],
-# }
-# labels_by_k = {
-#     1: [1, 2, 3, 4, 5],
-#     2: [1, 2, 3, 4, 5],
-#     3: [1, 2, 3],
-#     4: [1, 2, 3],
-# }
-# xticks = [1, 2, 3, 4, 5]
-
-# Used for A2 approach
 splits_by_k = {
-    1: [0.4],
-    2: [0.1],
-    3: [0.5],
-    4: [0.2],
+    1: splits,
+    2: splits,
+    3: splits,
+    4: splits,
 }
 labels_by_k = {
-    1: [1],
-    2: [1],
-    3: [1],
-    4: [1],
+    1: splits,
+    2: splits,
+    3: splits,
+    4: splits,
 }
 
-xticks = [1]
+xticks = splits
+xticklabels = [str(int(100 * s)) for s in splits]
+
 for i, k in enumerate([1, 2, 3, 4]):
     ix = i // 2
     iy = i % 2
@@ -78,18 +59,20 @@ for i, k in enumerate([1, 2, 3, 4]):
     axs[ix, iy].set_title(f"k = {k}")
 
 axs[ix, iy].set_xticks(xticks)
-axs[ix, iy].set_xticklabels([str(lab) for lab in xticks])
+axs[ix, iy].set_xticklabels(xticklabels)
 
 axs[0, 0].set_ylim(0, 1.0)
 axs[0, 0].set_yticks([0, 0.25, 0.5, 0.75, 1.0])
 axs[0, 0].set_yticklabels(["0", "25", "50", "75", "100"])
 axs[0, 0].set_ylabel("Scores (%)")
 axs[1, 0].set_ylabel("Scores (%)")
-axs[1, 0].set_xlabel("# of critical edges in training")
-axs[1, 1].set_xlabel("# of critical edges in training")
+axs[1, 0].set_xlabel("Training split (% edges)")
+axs[1, 1].set_xlabel("Training split (% edges)")
 plt.tight_layout()
 custom_leg = [
-    Line2D([], [], color=colors[i], marker="s", linestyle="None", markersize=12)
+    Line2D(
+        [], [], color=colors[i], marker="s", linestyle="None", markersize=12
+    )
     for i in range(len(legends))
 ]
 fig.legend(
@@ -99,7 +82,7 @@ fig.legend(
     borderaxespad=0.2,
     ncol=len(legends),
 )
-plt.subplots_adjust(bottom=0.140)
+plt.subplots_adjust(bottom=0.180)
 plt.savefig(f"visual_{arq}_metrics.png")
 
 for i, k in enumerate([1, 2, 3, 4]):
