@@ -4,3 +4,4 @@ networkx
 matplotlib
 sklearn
 ogb
+python-dotenv

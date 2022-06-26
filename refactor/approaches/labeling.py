@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Dict, Tuple, Any
 import numpy as np
 
 
@@ -9,6 +9,11 @@ class AbstractLabeling(ABC):
 
     @abstractmethod
     def label(self, criticalities: Dict[tuple, Any]) -> Dict[tuple, int]:
+        pass
+
+    @property
+    @abstractmethod
+    def identifier(self) -> Tuple[str, float]:
         pass
 
 
@@ -33,6 +38,10 @@ class ThresholdLabeling(AbstractLabeling):
                 classes[d] = -1
         return classes
 
+    @property
+    def identifier(self) -> Tuple[str, float]:
+        return "threshold", self.__threshold
+
 
 class QuantileLabeling(AbstractLabeling):
     def __init__(self, quantile: float) -> None:
@@ -51,3 +60,7 @@ class QuantileLabeling(AbstractLabeling):
             else:
                 classes[d] = -1
         return classes
+
+    @property
+    def identifier(self) -> Tuple[str, float]:
+        return "quantile", self.__quantile

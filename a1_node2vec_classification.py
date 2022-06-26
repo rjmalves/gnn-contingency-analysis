@@ -15,13 +15,13 @@ from torch_geometric.data import DataLoader, Data
 import matplotlib.pyplot as plt
 
 
-GRAPH = "ieee39"
+GRAPH = "ieee118"
 EDGELIST = f"/home/rogerio/git/k-contingency-screening/{GRAPH}.txt"
-K = [1, 2, 3, 4]
+K = [1]
 N_EVALS = 10
 TOL = 0.25
 EMBEDDING_D = [128]
-TRAIN_SPLIT = [0.1, 0.2, 0.3, 0.4, 0.5]
+TRAIN_SPLIT = [0.1]
 NUM_EPOCHS = 200
 LEARNING_RATE = 1e-2
 
