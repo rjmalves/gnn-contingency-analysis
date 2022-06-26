@@ -81,6 +81,6 @@ for c in combinations:
             roc_result = pd.concat([roc_result, roc_r], ignore_index=True)
 
 
-class_result.to_csv(f"./results/clg_{GRAPH}_class.csv")
-auc_result.to_csv(f"./results/clg_{GRAPH}_auc.csv")
-roc_result.to_csv(f"./results/clg_{GRAPH}_roc.csv")
+class_result.to_csv(f"./results/clg/{GRAPH}_class.csv")
+auc_result.to_csv(f"./results/clg/{GRAPH}_auc.csv")
+roc_result.to_csv(f"./results/clg/{GRAPH}_roc.csv")
