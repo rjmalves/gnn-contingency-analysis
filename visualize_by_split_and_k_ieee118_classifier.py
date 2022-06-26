@@ -56,6 +56,7 @@ for i, k in enumerate([1, 2, 3, 4]):
             color=colors[j],
             width=width / len(metric_cols),
         )
+    axs[ix, iy].grid(axis="y", alpha=0.4)
     axs[ix, iy].set_title(f"k = {k}")
 
 axs[ix, iy].set_xticks(xticks)

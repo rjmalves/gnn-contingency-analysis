@@ -129,6 +129,11 @@ class Preprocessing:
         data.y = torch.from_numpy(y.astype(np.int64))
         return data
 
+    def shuffle(self):
+        self.__nodes_by_label = None
+        self.__train_test_nodes = None
+        self.__torch_data = None
+
     @property
     def graph(self) -> nx.Graph:
         return self.__graph

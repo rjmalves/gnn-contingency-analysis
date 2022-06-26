@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 from torch_geometric.data import Data
+from typing import Tuple
 
 
 class CLG(torch.nn.Module):
@@ -40,3 +41,9 @@ def train(
     loss.backward()  # Derive gradients.
     optimizer.step()  # Update parameters based on gradients.
     return loss
+
+
+def test(model: CLG, data: Data) -> Tuple[torch.Tensor, torch.Tensor]:
+    model.eval()
+    out = model(data.x, data.edge_index)
+    return data.y[data.test_mask], out[data.test_mask]
