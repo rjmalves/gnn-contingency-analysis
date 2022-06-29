@@ -11,6 +11,10 @@ def criticality_file(basedir: str, graphname: str, k: str) -> str:
     )
 
 
+def train_result_file(basedir: str, graphname: str) -> str:
+    return join(basedir, f"{graphname}_train.csv")
+
+
 def class_result_file(basedir: str, graphname: str) -> str:
     return join(basedir, f"{graphname}_class.csv")
 
@@ -33,3 +37,9 @@ def classification_metrics_file(
     return join(
         basedir, "classification_metrics", f"{graphname}_{parameter_sufix}.png"
     )
+
+
+def train_curve_file(
+    basedir: str, graphname: str, parameter_sufix: str
+) -> str:
+    return join(basedir, "train", f"{graphname}_{parameter_sufix}.png")

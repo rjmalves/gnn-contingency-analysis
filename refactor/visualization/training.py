@@ -5,14 +5,16 @@ from os.path import isdir
 from os import makedirs
 import pathlib
 
-from refactor.utils.files import roc_curve_file
+from refactor.utils.files import train_curve_file
 
 plt.rcParams["font.size"] = "12"
 
 
-def stacked_roc_curve(basedir: str, graphname: str, df: pd.DataFrame):
+def stacked_train_curve(basedir: str, graphname: str, df: pd.DataFrame):
     parameter_cols = [
-        c for c in list(df.columns) if c not in ["fpr", "tpr", "threshold"]
+        c
+        for c in list(df.columns)
+        if c not in ["epoch", "train_loss", "val_loss"]
     ]
     unique_values = {c: df[c].unique().tolist() for c in parameter_cols}
     combinations = list(product(*[v for v in unique_values.values()]))
@@ -29,17 +31,24 @@ def stacked_roc_curve(basedir: str, graphname: str, df: pd.DataFrame):
         }
         df_filter = pd.DataFrame(data=col_filters).all(axis=1)
         ax.plot(
-            df.loc[df_filter, "fpr"].to_numpy(),
-            df.loc[df_filter, "tpr"].to_numpy(),
+            df.loc[df_filter, "epoch"].to_numpy().flatten(),
+            df.loc[df_filter, "train_loss"].to_numpy().flatten(),
+            alpha=0.2,
+            color="blue",
+            label="train",
+        )
+        ax.plot(
+            df.loc[df_filter, "epoch"].to_numpy().flatten(),
+            df.loc[df_filter, "val_loss"].to_numpy().flatten(),
             alpha=0.2,
             color="red",
+            label="validation",
         )
-    ax.plot([0, 1], [0, 1], linestyle="dashed", color="grey", alpha=0.5)
-    ax.set_xlabel("FPR")
-    ax.set_ylabel("TPR")
-    ax.set_xticks([0, 1])
-    ax.set_yticks([0, 1])
-    filename = roc_curve_file(basedir, graphname, sufix)
+
+    ax.set_xlabel("epoch")
+    ax.set_ylabel("loss")
+    plt.tight_layout()
+    filename = train_curve_file(basedir, graphname, sufix)
     filedir = pathlib.Path(filename).parent
     if not isdir(filedir):
         makedirs(filedir)

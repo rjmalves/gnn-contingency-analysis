@@ -15,6 +15,8 @@ class Postprocessing:
         self,
         y: torch.Tensor,
         yhat: torch.Tensor,
+        train_losses: np.ndarray,
+        val_losses: np.ndarray,
         k: int,
         train_split: float,
         labeling_strategy: AbstractLabeling,
@@ -22,6 +24,8 @@ class Postprocessing:
     ):
         self.__y = y
         self.__yhat = yhat
+        self.__train_losses = train_losses
+        self.__val_losses = val_losses
         self.__k = k
         self.__train_split = train_split
         self.__labeling_strategy = labeling_strategy
@@ -46,6 +50,19 @@ class Postprocessing:
     @property
     def roc_curve(self) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         return roc_curve(self.y, self.yhat_probabilities[:, 1])
+
+    def train_report(self) -> pd.DataFrame:
+        train_r = pd.DataFrame(
+            {
+                "epoch": np.arange(1, len(self.__train_losses) + 1),
+                "train_loss": self.__train_losses,
+                "val_loss": self.__val_losses,
+            }
+        )
+        train_r["k"] = self.__k
+        train_r["train_split"] = self.__train_split
+        train_r["eval"] = self.__eval
+        return train_r
 
     def classes_report(self) -> pd.DataFrame:
         report = classification_report(
@@ -90,3 +107,12 @@ class Postprocessing:
         name, value = self.__labeling_strategy.identifier
         df[name] = value
         return df
+
+    @staticmethod
+    def update_report(
+        current: pd.DataFrame, new: pd.DataFrame
+    ) -> pd.DataFrame:
+        if current.empty:
+            return new
+        else:
+            return pd.concat([current, new], ignore_index=True)

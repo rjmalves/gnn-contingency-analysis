@@ -40,7 +40,10 @@ def train(
     )  # Compute the loss solely based on the training nodes.
     loss.backward()  # Derive gradients.
     optimizer.step()  # Update parameters based on gradients.
-    return loss
+
+    val_loss = criterion(out[data.test_mask], data.y[data.test_mask])
+
+    return loss.item(), val_loss.item()
 
 
 def test(model: CLG, data: Data) -> Tuple[torch.Tensor, torch.Tensor]:
