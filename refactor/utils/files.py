@@ -11,6 +11,10 @@ def criticality_file(basedir: str, graphname: str, k: str) -> str:
     )
 
 
+def embeddings_result_file(basedir: str, graphname: str) -> str:
+    return join(basedir, f"{graphname}_embeddings.csv")
+
+
 def train_result_file(basedir: str, graphname: str) -> str:
     return join(basedir, f"{graphname}_train.csv")
 
@@ -43,3 +47,9 @@ def train_curve_file(
     basedir: str, graphname: str, parameter_sufix: str
 ) -> str:
     return join(basedir, "train", f"{graphname}_{parameter_sufix}.png")
+
+
+def embedding_scatter_file(
+    basedir: str, graphname: str, parameter_sufix: str
+) -> str:
+    return join(basedir, "embeddings", f"{graphname}_{parameter_sufix}.png")

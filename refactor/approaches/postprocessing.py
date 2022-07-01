@@ -62,6 +62,8 @@ class Postprocessing:
         train_r["k"] = self.__k
         train_r["train_split"] = self.__train_split
         train_r["eval"] = self.__eval
+        name, value = self.__labeling_strategy.identifier
+        train_r[name] = value
         return train_r
 
     def classes_report(self) -> pd.DataFrame:

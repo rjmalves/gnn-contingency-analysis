@@ -1,9 +1,13 @@
 import torch
 import numpy as np
+import pandas as pd
 from torch_geometric.nn import Node2Vec
 from torch_geometric.data import Data
 from typing import Tuple, Dict, List
+from sklearn.metrics import log_loss
 from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 
 class CGE:
@@ -42,6 +46,33 @@ class CGE:
                 z[u], z[v]
             )
         return edge_embedding
+
+    def edge_embeddings_with_labels(
+        self, edges_by_labels: Dict[int, np.ndarray]
+    ) -> pd.DataFrame:
+        embeddings = self.edge_embeddings
+        labels = list(edges_by_labels.keys())
+        df = pd.DataFrame()
+        embeddings_by_labels: Dict[int, np.ndarray] = {
+            label: np.zeros(
+                (edges_by_labels[label].shape[0], self.embedding_dimension)
+            )
+            for label in labels
+        }
+        for label in labels:
+            for i, edge in enumerate(edges_by_labels[label]):
+                edge_tuple = (edge[0], edge[1])
+                embeddings_by_labels[label][i, :] = embeddings[edge_tuple]
+
+            df_label = pd.DataFrame(
+                embeddings_by_labels[label],
+                columns=[
+                    f"z{d}" for d in range(1, self.embedding_dimension + 1)
+                ],
+            )
+            df_label["label"] = label
+            df = pd.concat([df, df_label], ignore_index=True)
+        return df
 
     def train_data(
         self,
@@ -94,9 +125,9 @@ def train_embedding(
 
     train_classification(model, train_edges, edges_labels)
     X_test, y_test = model.test_data(test_edges, edges_labels)
-    acc = model.classification_model.score(X_test, y_test)
+    yhat = model.classification_model.predict_proba(X_test)
 
-    return total_loss / len(loader), acc
+    return total_loss / len(loader), log_loss(y_test, yhat)
 
 
 def train_classification(
