@@ -1,5 +1,7 @@
 import sys
 import pandas as pd
+import numpy as np
+import random
 from os import getenv
 from os.path import join
 from dotenv import load_dotenv
@@ -8,12 +10,17 @@ from refactor.utils.files import (
     train_result_file,
     roc_result_file,
     class_result_file,
+    embeddings_result_file,
 )
 from refactor.visualization.training import stacked_train_curve
 from refactor.visualization.roc_auc import stacked_roc_curve
+from refactor.visualization.embeddings import training_embeddings_scatter
 from refactor.visualization.classifications_metrics import (
     classification_metrics_bars,
 )
+
+random.seed(0)
+np.random.seed(0)
 
 
 if __name__ == "__main__":
@@ -49,3 +56,8 @@ if __name__ == "__main__":
         roc_result_file(RESULT_BASEDIR, GRAPHNAME), index_col=0
     )
     stacked_roc_curve(FIGURE_BASEDIR, GRAPHNAME, roc_result)
+
+    embeddings_result = pd.read_csv(
+        embeddings_result_file(RESULT_BASEDIR, GRAPHNAME), index_col=0
+    )
+    training_embeddings_scatter(FIGURE_BASEDIR, GRAPHNAME, embeddings_result)
