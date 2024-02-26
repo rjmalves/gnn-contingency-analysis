@@ -2,6 +2,7 @@ numpy
 pandas
 networkx
 matplotlib
-sklearn
+scikit-learn
 ogb
 python-dotenv
+torch_geometric
