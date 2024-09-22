@@ -1,14 +1,15 @@
+import pathlib
+from itertools import product
+from os import makedirs
+from os.path import isdir
+from typing import List
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from itertools import product
-from os.path import isdir
-from os import makedirs
-import pathlib
-from typing import List
+from matplotlib.lines import Line2D
 
 from refactor.utils.files import classification_metrics_file
-from matplotlib.lines import Line2D
 
 plt.rcParams["font.size"] = "12"
 

@@ -1,9 +1,9 @@
-import warnings
-import pandas as pd
-import numpy as np
 from os import curdir
 from os.path import join
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.colors import ListedColormap
 from matplotlib.lines import Line2D
 
@@ -17,14 +17,12 @@ FIGURE_BASEDIR = join(RESULT_BASEDIR, "figures")
 df = pd.read_csv(roc_result_file(RESULT_BASEDIR, GRAPHNAME), index_col=0)
 
 COLORS = (
-    np.array(
-        [
-            [247, 100, 105, 255],
-            [49, 85, 214, 255],
-            [50, 158, 82, 255],
-            [130, 133, 131, 255],
-        ]
-    )
+    np.array([
+        [247, 100, 105, 255],
+        [49, 85, 214, 255],
+        [50, 158, 82, 255],
+        [130, 133, 131, 255],
+    ])
     / 255.0
 )
 cm = ListedColormap(COLORS)

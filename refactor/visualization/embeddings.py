@@ -1,14 +1,15 @@
-from sklearn.manifold import TSNE
-import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-from matplotlib.lines import Line2D
-import numpy as np
-import pandas as pd
-from itertools import product
-from os.path import isdir
-from os import makedirs
 import pathlib
 import warnings
+from itertools import product
+from os import makedirs
+from os.path import isdir
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from matplotlib.colors import ListedColormap
+from matplotlib.lines import Line2D
+from sklearn.manifold import TSNE
 
 from refactor.utils.files import embedding_scatter_file
 
@@ -33,22 +34,17 @@ def _generate_embeddings_to_plot(df: pd.DataFrame) -> pd.DataFrame:
     return df_plot.loc[df_plot["label"] >= 0]
 
 
-def training_embeddings_scatter(
-    basedir: str, graphname: str, df: pd.DataFrame
-):
-
+def training_embeddings_scatter(basedir: str, graphname: str, df: pd.DataFrame):
     # COLORS = [
     #     "#828583",
     #     "#f76469",
     #     "#32a852",
     # ]
 
-    COLORS = np.array(
-        [
-            [0.5098039215686274, 0.5215686274509804, 0.5137254901960784, 1],
-            [0.9686274509803922, 0.39215686274509803, 0.4117647058823529, 1],
-        ]
-    )
+    COLORS = np.array([
+        [0.5098039215686274, 0.5215686274509804, 0.5137254901960784, 1],
+        [0.9686274509803922, 0.39215686274509803, 0.4117647058823529, 1],
+    ])
     cm = ListedColormap(COLORS)
 
     legend = [

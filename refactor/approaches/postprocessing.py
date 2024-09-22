@@ -1,10 +1,10 @@
+from typing import Dict, Tuple
+
 import numpy as np
-import torch.nn.functional as F
-import torch
 import pandas as pd
-from typing import Tuple, Dict
-from sklearn.metrics import classification_report
-from sklearn.metrics import roc_curve, roc_auc_score
+import torch
+import torch.nn.functional as F
+from sklearn.metrics import classification_report, roc_auc_score, roc_curve
 
 from refactor.approaches.labeling import AbstractLabeling
 from refactor.visualization.classifications_metrics import CLASSES, METRICS
@@ -52,13 +52,11 @@ class Postprocessing:
         return roc_curve(self.y, self.yhat_probabilities[:, 1])
 
     def train_report(self) -> pd.DataFrame:
-        train_r = pd.DataFrame(
-            {
-                "epoch": np.arange(1, len(self.__train_losses) + 1),
-                "train_loss": self.__train_losses,
-                "val_loss": self.__val_losses,
-            }
-        )
+        train_r = pd.DataFrame({
+            "epoch": np.arange(1, len(self.__train_losses) + 1),
+            "train_loss": self.__train_losses,
+            "val_loss": self.__val_losses,
+        })
         train_r["k"] = self.__k
         train_r["train_split"] = self.__train_split
         train_r["eval"] = self.__eval
@@ -100,9 +98,7 @@ class Postprocessing:
 
     def roc_report(self) -> pd.DataFrame:
         fpr, tpr, threshold = self.roc_curve
-        df = pd.DataFrame(
-            data={"fpr": fpr, "tpr": tpr, "threshold": threshold}
-        )
+        df = pd.DataFrame(data={"fpr": fpr, "tpr": tpr, "threshold": threshold})
         df["eval"] = self.__eval
         df["k"] = self.__k
         df["train_split"] = self.__train_split
@@ -111,9 +107,7 @@ class Postprocessing:
         return df
 
     @staticmethod
-    def update_report(
-        current: pd.DataFrame, new: pd.DataFrame
-    ) -> pd.DataFrame:
+    def update_report(current: pd.DataFrame, new: pd.DataFrame) -> pd.DataFrame:
         if current.empty:
             return new
         else:

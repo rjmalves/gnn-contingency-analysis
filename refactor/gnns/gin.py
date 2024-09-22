@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
-from sklearn.manifold import TSNE
 import torch
 import torch.nn.functional as F
+from sklearn.manifold import TSNE
 from torch_geometric.datasets import Planetoid
-from torch_geometric.transforms import NormalizeFeatures
 from torch_geometric.nn import GINConv, Linear
+from torch_geometric.transforms import NormalizeFeatures
 
 
 def visualize(h, color, nome):

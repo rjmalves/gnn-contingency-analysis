@@ -6,9 +6,7 @@ def edgelist_file(basedir: str, graphname: str) -> str:
 
 
 def criticality_file(basedir: str, graphname: str, k: str) -> str:
-    return join(
-        basedir, f"exaustivo_{graphname}_{k}", "edge_global_deltas.csv"
-    )
+    return join(basedir, f"exaustivo_{graphname}_{k}", "edge_global_deltas.csv")
 
 
 def embeddings_result_file(basedir: str, graphname: str) -> str:
@@ -43,9 +41,7 @@ def classification_metrics_file(
     )
 
 
-def train_curve_file(
-    basedir: str, graphname: str, parameter_sufix: str
-) -> str:
+def train_curve_file(basedir: str, graphname: str, parameter_sufix: str) -> str:
     return join(basedir, "train", f"{graphname}_{parameter_sufix}.png")
 
 

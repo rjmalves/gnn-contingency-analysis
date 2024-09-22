@@ -1,12 +1,13 @@
 import warnings
-import pandas as pd
-import numpy as np
 from os import curdir
 from os.path import join
-from sklearn.manifold import TSNE
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.colors import ListedColormap
 from matplotlib.lines import Line2D
+from sklearn.manifold import TSNE
 
 from refactor.utils.files import embeddings_result_file
 
@@ -33,16 +34,12 @@ def _generate_embeddings_to_plot(df: pd.DataFrame) -> pd.DataFrame:
     return df_plot.loc[df_plot["label"] >= 0]
 
 
-df = pd.read_csv(
-    embeddings_result_file(RESULT_BASEDIR, GRAPHNAME), index_col=0
-)
+df = pd.read_csv(embeddings_result_file(RESULT_BASEDIR, GRAPHNAME), index_col=0)
 
-COLORS = np.array(
-    [
-        [0.5098039215686274, 0.5215686274509804, 0.5137254901960784, 1],
-        [0.9686274509803922, 0.39215686274509803, 0.4117647058823529, 1],
-    ]
-)
+COLORS = np.array([
+    [0.5098039215686274, 0.5215686274509804, 0.5137254901960784, 1],
+    [0.9686274509803922, 0.39215686274509803, 0.4117647058823529, 1],
+])
 cm = ListedColormap(COLORS)
 legend = [
     Line2D(
@@ -71,9 +68,7 @@ eval = 30
 
 embeddings_cols = [c for c in df.columns if "z" in c]
 common_filter = (
-    (df["tol"] == tol)
-    & (df["train_split"] == train_split)
-    & (df["eval"] == 30)
+    (df["tol"] == tol) & (df["train_split"] == train_split) & (df["eval"] == 30)
 )
 
 for epoch in [1, 300]:

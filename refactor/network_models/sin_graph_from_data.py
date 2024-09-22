@@ -1,19 +1,12 @@
+import matplotlib.pyplot as plt
 import networkx as nx
 import pandas as pd
-import numpy as np
-import os
-import scipy.optimize as sp
-from scipy.special import binom, gammaincc
-import matplotlib.pyplot as plt
-from datetime import datetime
 
-plt.rcParams.update(
-    {
-        "text.usetex": True,
-        "font.family": "sans-serif",
-        "font.sans-serif": ["Helvetica"],
-    }
-)
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Helvetica"],
+})
 
 
 df = pd.read_csv(

@@ -1,9 +1,10 @@
+import pathlib
+from itertools import product
+from os import makedirs
+from os.path import isdir
+
 import matplotlib.pyplot as plt
 import pandas as pd
-from itertools import product
-from os.path import isdir
-from os import makedirs
-import pathlib
 
 from refactor.utils.files import train_curve_file
 

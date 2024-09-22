@@ -1,15 +1,14 @@
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-import pandas as pd
-import torch
-from sklearn.manifold import TSNE
 import torch
 import torch.nn.functional as F
-from torch_geometric.utils.convert import from_networkx
+from sklearn.manifold import TSNE
 from torch_geometric.nn import GCNConv
-import matplotlib.pyplot as plt
-from contingency.models.network import Network
+from torch_geometric.utils.convert import from_networkx
+
 from contingency.controllers.screener import ExhaustiveScreener
+from contingency.models.network import Network
 
 
 def visualize(h, color):

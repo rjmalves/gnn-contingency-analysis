@@ -1,15 +1,14 @@
 """
-Run the graph embedding methods on Karate graph and evaluate them on 
-graph reconstruction and visualization. Please copy the 
+Run the graph embedding methods on Karate graph and evaluate them on
+graph reconstruction and visualization. Please copy the
 gem/data/karate.edgelist to the working directory
 """
+
 import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
-
-from gem.utils import graph_util
-
 from gem.embedding.lap import LaplacianEigenmaps
+from gem.utils import graph_util
 
 
 def load_labels():

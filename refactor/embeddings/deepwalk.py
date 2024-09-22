@@ -1,11 +1,9 @@
-import numpy as np
-
-from ge.classify import Classifier
-from ge import DeepWalk
-from sklearn.linear_model import LogisticRegression
-
 import matplotlib.pyplot as plt
 import networkx as nx
+import numpy as np
+from ge import DeepWalk
+from ge.classify import Classifier
+from sklearn.linear_model import LogisticRegression
 
 
 def load_labels():

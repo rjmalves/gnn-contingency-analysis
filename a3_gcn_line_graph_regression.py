@@ -97,7 +97,7 @@ def canonical_relabeling(
 
 
 def divide_nodes_in_classes(
-    classes_relabel: Dict[tuple, int]
+    classes_relabel: Dict[tuple, int],
 ) -> Dict[int, np.ndarray]:
     class_set = set(classes_relabel.values())
     nodes_classes = {v: [] for v in class_set}

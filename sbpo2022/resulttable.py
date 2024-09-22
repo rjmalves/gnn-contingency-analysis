@@ -1,10 +1,9 @@
-import pandas as pd
-import numpy as np
 from os import curdir
 from os.path import join
 
-from refactor.utils.files import class_result_file, auc_result_file
+import pandas as pd
 
+from refactor.utils.files import auc_result_file, class_result_file
 
 RESULT_BASEDIR = join(curdir, "results", "clg")
 GRAPHS = ["ieee39", "ieee57", "ieee118", "ieee300"]

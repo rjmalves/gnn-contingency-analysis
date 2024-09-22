@@ -1,23 +1,24 @@
-import sys
-import pandas as pd
-import numpy as np
 import random
+import sys
 from os import getenv
 from os.path import join
+
+import numpy as np
+import pandas as pd
 from dotenv import load_dotenv
 
 from refactor.utils.files import (
-    train_result_file,
-    roc_result_file,
     class_result_file,
     embeddings_result_file,
+    roc_result_file,
+    train_result_file,
 )
-from refactor.visualization.training import stacked_train_curve
-from refactor.visualization.roc_auc import stacked_roc_curve
-from refactor.visualization.embeddings import training_embeddings_scatter
 from refactor.visualization.classifications_metrics import (
     classification_metrics_bars,
 )
+from refactor.visualization.embeddings import training_embeddings_scatter
+from refactor.visualization.roc_auc import stacked_roc_curve
+from refactor.visualization.training import stacked_train_curve
 
 random.seed(0)
 np.random.seed(0)

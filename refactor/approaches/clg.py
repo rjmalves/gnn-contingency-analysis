@@ -1,11 +1,12 @@
+from typing import Dict, Tuple
+
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn.functional as F
 from torch.nn import Linear
-from torch_geometric.nn import GCNConv
 from torch_geometric.data import Data
-import numpy as np
-import pandas as pd
-from typing import Tuple, Dict
+from torch_geometric.nn import GCNConv
 
 
 class CLG(torch.nn.Module):
@@ -41,9 +42,10 @@ class CLG(torch.nn.Module):
         labels = list(nodes_by_labels.keys())
         df = pd.DataFrame()
         embeddings_by_labels = {
-            label: np.zeros(
-                (nodes_by_labels[label].shape[0], self._hidden_channels)
-            )
+            label: np.zeros((
+                nodes_by_labels[label].shape[0],
+                self._hidden_channels,
+            ))
             for label in labels
         }
         for label in labels:

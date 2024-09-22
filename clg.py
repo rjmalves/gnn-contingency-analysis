@@ -1,27 +1,27 @@
-import networkx as nx
-import pandas as pd
-from itertools import product
-import torch
 import random
-import numpy as np
+from itertools import product
 from os import getenv, makedirs
 from os.path import isdir, join
-from dotenv import load_dotenv
 from typing import List
 
+import networkx as nx
+import numpy as np
+import pandas as pd
+import torch
+from dotenv import load_dotenv
 
+from refactor.approaches.clg import CLG, test, train
 from refactor.approaches.labeling import QuantileLabeling
 from refactor.approaches.postprocessing import Postprocessing
 from refactor.approaches.preprocessing import Preprocessing
-from refactor.approaches.clg import CLG, train, test
 from refactor.utils.files import (
-    edgelist_file,
-    criticality_file,
-    class_result_file,
     auc_result_file,
+    class_result_file,
+    criticality_file,
+    edgelist_file,
+    embeddings_result_file,
     roc_result_file,
     train_result_file,
-    embeddings_result_file,
 )
 
 random.seed(0)

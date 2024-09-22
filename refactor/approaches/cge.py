@@ -1,13 +1,12 @@
-import torch
+from typing import Dict, List, Tuple
+
 import numpy as np
 import pandas as pd
-from torch_geometric.nn import Node2Vec
-from torch_geometric.data import Data
-from typing import Tuple, Dict, List
+import torch
 from sklearn.metrics import log_loss
 from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
+from torch_geometric.data import Data
+from torch_geometric.nn import Node2Vec
 
 
 class CGE:
@@ -54,9 +53,10 @@ class CGE:
         labels = list(edges_by_labels.keys())
         df = pd.DataFrame()
         embeddings_by_labels: Dict[int, np.ndarray] = {
-            label: np.zeros(
-                (edges_by_labels[label].shape[0], self.embedding_dimension)
-            )
+            label: np.zeros((
+                edges_by_labels[label].shape[0],
+                self.embedding_dimension,
+            ))
             for label in labels
         }
         for label in labels:

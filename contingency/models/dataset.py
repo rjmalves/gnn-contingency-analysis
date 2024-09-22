@@ -1,18 +1,15 @@
-import torch
-from torch_geometric.data import InMemoryDataset, Data
+from typing import Callable, Dict, List, Tuple, Union
+
 import networkx as nx
 import pandas as pd
-from typing import Union, List, Tuple, Dict, Callable
-
-from contingency.controllers.screener import Screener
+import torch
+from torch_geometric.data import Data, InMemoryDataset
 
 
 class Dataset(InMemoryDataset):
-    def __init__(self,
-                 root: str,
-                 num_nodes: int,
-                 transform=None,
-                 pre_transform=None):
+    def __init__(
+        self, root: str, num_nodes: int, transform=None, pre_transform=None
+    ):
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0])
         self.num_nodes = num_nodes
@@ -28,7 +25,6 @@ class Dataset(InMemoryDataset):
     def download(self):
         pass
 
-    
     @staticmethod
     def __node_pair_metrics() -> Dict[str, Callable]:
         return {
@@ -38,7 +34,7 @@ class Dataset(InMemoryDataset):
             "ClosenessCentrality": nx.closeness_centrality,
             "CurrentFlowCloseness": nx.current_flow_closeness_centrality,
             "BetweennessCentrality": nx.betweenness_centrality,
-            "CommBetweenness": nx.communicability_betweenness_centrality
+            "CommBetweenness": nx.communicability_betweenness_centrality,
         }
 
     @staticmethod
@@ -46,8 +42,8 @@ class Dataset(InMemoryDataset):
         return {
             "EdgeBetweenness": nx.edge_betweenness_centrality,
             "EdgeCFB": nx.edge_current_flow_betweenness_centrality,
-            "EdgeLoadCentrality": nx.edge_load_centrality
-            }
+            "EdgeLoadCentrality": nx.edge_load_centrality,
+        }
 
     def __eval_node_pair_metrics(self, G: nx.Graph) -> pd.DataFrame:
         metrics = Dataset.__node_pair_metrics()
@@ -62,8 +58,7 @@ class Dataset(InMemoryDataset):
                 e_m = 0.5 * (metric_value[e[0]] + metric_value[e[1]])
                 results[e].append(e_m)
         # Makes the DF for viewing the results
-        df_result = pd.DataFrame(data=results,
-                                 index=indices)
+        df_result = pd.DataFrame(data=results, index=indices)
         return df_result
 
     def __eval_edge_metrics(self, G: nx.Graph) -> pd.DataFrame:
@@ -80,20 +75,21 @@ class Dataset(InMemoryDataset):
                     e_m = e
                 results[e].append(metric_value[e_m])
         # Makes the DF for viewing the results
-        df_result = pd.DataFrame(data=results,
-                                 index=indices)
+        df_result = pd.DataFrame(data=results, index=indices)
         return df_result
 
     def __eval_metrics(self, G: nx.Graph) -> pd.DataFrame:
-        return pd.concat([self.__eval_node_pair_metrics(G),
-                          self.__eval_edge_metrics(G)]).T
+        return pd.concat([
+            self.__eval_node_pair_metrics(G),
+            self.__eval_edge_metrics(G),
+        ]).T
 
     def process(self):
         # Lê os grafos do arquivo
         graphs = nx.read_graph6(self.raw_file_names[0])
         # Calcula os dados de interesse
         graph_data = [self.__eval_metrics(G) for G in graphs]
-        
+
         print(graph_data[0])
         # Convete para objetos "Data"
         data_list = []
@@ -101,7 +97,6 @@ class Dataset(InMemoryDataset):
             # Node features
 
             data = Data()
-
 
         if self.pre_filter is not None:
             data_list = [data for data in data_list if self.pre_filter(data)]

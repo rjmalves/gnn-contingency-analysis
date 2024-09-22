@@ -1,6 +1,7 @@
+from typing import Dict, List, Tuple
+
 import networkx as nx
 import numpy as np
-from typing import Dict, Tuple, List
 import torch
 from torch_geometric.data import Data
 from torch_geometric.utils.convert import from_networkx
@@ -116,9 +117,10 @@ class Preprocessing:
         train_nodes_by_classes = {v: [] for v in class_set}
         test_nodes_by_classes = {v: [] for v in class_set}
         less_elements = min([len(nodes_classes[v]) for v in class_set])
-        num_train_elements_by_class = max(
-            [1, round(self.__train_split * less_elements)]
-        )
+        num_train_elements_by_class = max([
+            1,
+            round(self.__train_split * less_elements),
+        ])
         for c in class_set:
             nodes = nodes_classes[c]
             train_nodes_by_classes[c] = nodes[:num_train_elements_by_class]
@@ -135,9 +137,10 @@ class Preprocessing:
         train_edges_by_classes = {v: [] for v in class_set}
         test_edges_by_classes = {v: [] for v in class_set}
         less_elements = min([len(edges_classes[v]) for v in class_set])
-        num_train_elements_by_class = max(
-            [1, round(self.__train_split * less_elements)]
-        )
+        num_train_elements_by_class = max([
+            1,
+            round(self.__train_split * less_elements),
+        ])
         for c in class_set:
             edges = edges_classes[c]
             train_edges_by_classes[c] = edges[:num_train_elements_by_class]
