@@ -6,3 +6,4 @@ scikit-learn
 ogb
 python-dotenv
 torch_geometric
+click
