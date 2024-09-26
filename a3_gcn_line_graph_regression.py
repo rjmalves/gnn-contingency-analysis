@@ -1,21 +1,17 @@
+from itertools import product
 from typing import Dict, List
+
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import pandas as pd
 import torch
-from itertools import product
 from sklearn.manifold import TSNE
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import r2_score
-import torch
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from torch.nn import Linear
-import torch.nn.functional as F
-from torch_geometric.utils.convert import from_networkx
-from torch_geometric.nn import GCNConv
 from torch_geometric.data import Data
-import matplotlib.pyplot as plt
-
+from torch_geometric.nn import GCNConv
+from torch_geometric.utils.convert import from_networkx
 
 GRAPH = "itaipu11"
 EDGELIST = f"/home/rogerio/git/k-contingency-screening/{GRAPH}.txt"

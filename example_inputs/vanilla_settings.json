@@ -3,83 +3,12 @@
     "name": "vanilla-1",
     "outdir": "./outputs",
     "dataset": {
-        "start_date": "2017-01-02",
-        "end_date": "2023-02-15",
-        "source": {
+        "topology": {
             "kind": "FS",
             "parameters": {
-                "path": "/home/rogerio/ONS/dados_weol/data/wind_usi1_prev8_day1.parquet.gzip",
-                "format": "parquet"
+                "path": "data/ieee39.txt",
+                "format": "edgelist"
             }
-        }
-    },
-    "sampling": {
-        "lookback_window_length": 48,
-        "horizon": [
-            -47,
-            -46,
-            -45,
-            -44,
-            -43,
-            -42,
-            -41,
-            -40,
-            -39,
-            -38,
-            -37,
-            -36,
-            -35,
-            -34,
-            -33,
-            -32,
-            -31,
-            -30,
-            -29,
-            -28,
-            -27,
-            -26,
-            -25,
-            -24,
-            -23,
-            -22,
-            -21,
-            -20,
-            -19,
-            -18,
-            -17,
-            -16,
-            -15,
-            -14,
-            -13,
-            -12,
-            -11,
-            -10,
-            -9,
-            -8,
-            -7,
-            -6,
-            -5,
-            -4,
-            -3,
-            -2,
-            -1,
-            0
-        ],
-        "stride": 48,
-        "start_index": 0,
-        "num_samples": null,
-        "input_columns": [
-            "previsto00",
-            "previsto01",
-            "previsto02",
-            "previsto03"
-        ],
-        "target_column": "verificado",
-        "date_column": "data_hora",
-        "key_column": null,
-        "temporal_embedding": {
-            "kind": "hour_of_day",
-            "parameters": {}
         }
     },
     "model": {
